@@ -14,12 +14,12 @@ Sample `b.txt` file (taken from this repository).
 
 ```
 run:
-	clang++ -Wall -std=c++17 src/b.cpp -o src/b
+	clang++ -Wall -std=c++17 src/b.cpp -o b
 
 all: run clean
 
 clean:
-	rm src/b
+	rm b
 ```
 
 ## Running Locally

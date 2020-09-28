@@ -84,9 +84,9 @@ Graph build_graph(std::vector<std::string> lines, char delimiter)
             std::string specifier = all[0];
 
             // Exec
-            std::string_view ref = lines[i + 1];
-            ref.remove_prefix(std::min(ref.find_first_not_of(" "), ref.size()));
-            std::string exec = std::string(ref);
+            std::string_view sv = lines[i + 1];
+            sv.remove_prefix(std::min(sv.find_first_not_of(" "), sv.size()));
+            std::string exec = std::string(sv);
 
             // Dependencies
             std::vector<std::string> dependencies;
@@ -178,7 +178,8 @@ std::vector<CommandVertex> topological_sort(Graph g)
 
             // `std::find` is more efficient than `std::count` since it stops
             // the search once the element is found
-            if (std::find(deps.begin(), deps.end(), vertex.specifier) != deps.end()) {
+            if (std::find(deps.begin(), deps.end(), vertex.specifier)
+                    != deps.end()) {
                 g[i].indegree -= 1;
                 if (g[i].indegree == 0) {
                     no_incoming.push_back(g[i]);
@@ -195,7 +196,6 @@ std::vector<CommandVertex> topological_sort(Graph g)
     // Otherwise, we have a cycle
     throw("Circular dependencies -> the dependency graph has a cycle");
 }
-
 
 int main(int argc, char **argv)
 {
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
     std::string specifier = argv[1];
 
     // Make sure the command exists
-    // If it does, construct the subgraph, construct the topological ordering
+    // If it does, construct the subgraph, construct the topological ordering,
     // and execute the commands
     bool exists = false;
     for (int i = 0; i < dependency_graph.size(); i++) {
@@ -237,7 +237,9 @@ int main(int argc, char **argv)
                 std::vector<std::string> dependencies =
                     get_all_dependencies(dependency_graph, specifier);
                 
-                // Create a subgraph of the command and all associated dependencies
+
+                // Create a subgraph of the command and all associated
+                // dependencies
                 Graph subgraph;
                 for (std::string dep : dependencies) {
                     subgraph.push_back(get_vertex(dependency_graph, dep));
@@ -245,9 +247,11 @@ int main(int argc, char **argv)
 
                 // Return the topological ordering of the graph
                 subgraph = topological_sort(subgraph);
+                subgraph.pop_back();
 
                 // Run the commands in a topological order
                 for (CommandVertex vertex : subgraph) {
+                    std::cout << vertex.specifier << std::endl;
                     vertex.run();
                 }
             }
