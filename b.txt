@@ -1,0 +1,7 @@
+run:
+	clang++ -Wall -std=c++17 src/b.cpp -o src/b
+
+all: run clean
+
+clean:
+	rm src/b
