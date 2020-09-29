@@ -10,14 +10,15 @@ CommandVertex::CommandVertex(std::string specifier,
     
 void CommandVertex::run()
 {
-    // Takes a C string as an argument
+    // Takes a C string as a formal parameter
     system(std::string(this->exec).c_str());
 }
 
 bool proper(std::string line)
 {
-    if (line.empty() || line[0] == '#')
+    if (line.empty() || line[0] == '#') {
         return false;
+    }
 
     for (int i = 1; i < line.size(); i++) {
         if (line[i] != ' ') {
@@ -40,16 +41,20 @@ std::vector<std::string> get_proper_lines(std::string filepath)
     std::ifstream file(filepath);
     std::string line;
 
-    if (!file.is_open())
-        perror("Error while opening the file");
+    if (!file.is_open()) {
+        std::runtime_error("Error while opening the file");
+    }
 
     // Get only if not a comment
-    while (std::getline(file, line))
-        if (proper(line))
+    while (std::getline(file, line)) {
+        if (proper(line)) {
             lines.push_back(line);
+        }
+    }
 
-    if (file.bad())
-        perror("Error while reading the file");
+    if (file.bad()) {
+        std::runtime_error("Error while reading the file");
+    }
 
     return lines;
 }
@@ -160,16 +165,15 @@ std::vector<CommandVertex> topological_sort(Graph g)
         }
     }
 
-    // A topological ordering
-    // Should populate this vector
-    std::vector<CommandVertex> topological_ordering;
+    // Define a topological ordering
+    std::vector<CommandVertex> tlogical_ordering;
 
     // As long as there exists a vertex with no incoming edges
     while (no_incoming.size() > 0) {
         // Add the vertex to the ordering and remove it from the vector
         CommandVertex vertex = no_incoming.back();
         no_incoming.pop_back();
-        topological_ordering.push_back(vertex);
+        tlogical_ordering.push_back(vertex);
         
         // Decrement the indegree of the neighbors of the removed vertex
         for (int i = 0; i < g.size(); i++) {
@@ -189,12 +193,10 @@ std::vector<CommandVertex> topological_sort(Graph g)
     }
 
     // If we have all vertices, we are done
-    if (topological_ordering.size() == g.size()) {
-        return topological_ordering;
-    }
+    if (tlogical_ordering.size() == g.size()) { return tlogical_ordering; }
    
     // Otherwise, we have a cycle
-    throw("Circular dependencies -> the dependency graph has a cycle");
+    throw std::logic_error("Circular dependencies");
 }
 
 int main(int argc, char **argv)
@@ -205,13 +207,8 @@ int main(int argc, char **argv)
     Graph dependency_graph = build_graph(lines, DELIMITER);
 
     // Validate the command line arguments
-    if (argc == 1) {
-        return 0;
-    }
-
-    if (argc != 2) {
-        throw("Redundancy in the argument list");
-    }
+    if (argc == 1) { return 0; }
+    if (argc != 2) { throw std::invalid_argument("Redundant arguments"); }
 
     // Get the specifier
     std::string specifier = argv[1];
@@ -259,6 +256,6 @@ int main(int argc, char **argv)
     }
 
     if (!exists) {
-        std::cout << "The specifier does not exist" << std::endl;
+        throw std::invalid_argument("The specifier does not exist");
     }
 }

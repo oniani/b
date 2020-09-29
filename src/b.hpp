@@ -7,7 +7,11 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
+
+// Delimiter
+const char DELIMITER = ':';
 
 // The command class that allows for running the commands
 class CommandVertex {
@@ -40,9 +44,6 @@ CommandVertex get_vertex(Graph, std::string);
 std::vector<std::string> get_all_dependencies(Graph, std::string);
 // Run a topological sort
 std::vector<CommandVertex> topological_sort(Graph);
-
-// Delimiter
-const char DELIMITER = ':';
 
 // Determines the proper string
 bool proper(std::string);
