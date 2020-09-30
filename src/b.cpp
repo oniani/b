@@ -11,7 +11,7 @@ CommandVertex::CommandVertex(std::string specifier,
 void CommandVertex::run()
 {
     // Takes a C string as a formal parameter
-    system(std::string(this->exec).c_str());
+    system(this->exec.c_str());
 }
 
 bool proper(std::string line)
